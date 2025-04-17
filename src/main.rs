@@ -277,7 +277,13 @@ enum Type { Number, Boolean }
 fn type_check_expr(expr: &Expr, env: &mut Vec<(String, Type)>) -> Result<Type, CompileError> {
     use Type::*;
     match expr {
-        Expr::Number(_) => Ok(Number),
+        Expr::Number(n) => {
+            // Check if the number is within the valid range for Snek
+            if *n > 4611686018427387903 || *n < -4611686018427387904 {
+                return Err(CompileError("Invalid number literal: out of range".into()));
+            }
+            Ok(Number)
+        },
         Expr::Boolean(_) => Ok(Boolean),
         Expr::Input => Ok(Number),  // `input` is always a number (by spec, must be an integer CLI argument)
         Expr::Id(name) => {
